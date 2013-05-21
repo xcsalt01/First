@@ -112,16 +112,39 @@ var canvas_drag_and_drop = {
     switch ( shape )
     {
       case 'rect':
-
         if ( style === 'stroke' )
         {
-          context.dummy();
+          // stroke, in this case, means draw the outline only
           context.strokeRect( xpos, ypos, digitsWidth, digitsHeight );
         }
         else if ( style === 'fill' )
         {
           context.fillRect( xpos, ypos, digitsWidth, digitsHeight );
         }
+        break;
+      case 'circle':
+        // setting up radians to draw a circle
+        var startPoint = ( Math.PI / 180 ) * 0;
+        var endPoint = ( Math.PI / 180 ) * 360;
+
+        // Unlike rectangles, circles need a full path item, there isn't a
+        // shortcut to drawing one
+        context.beginPath();
+        // Drawing circle at center mouse point is not ideal, but unlike
+        // rectangle, simply shifting the center point by the position of the
+        // mouse will not put the circle in the right place, also, direction
+        // of drawn circle is not important (6th parameter)
+        // digitsWidth is used for the radius of the circle, thus dividing by 2
+        context.arc( event.layerX, event.layerY, digitsWidth / 2, startPoint, endPoint, true );
+        context.stroke();
+        // only difference between stroke and fill is whether or not a call to
+        // context.fill() is executed
+        if ( style === 'fill' )
+        {
+          context.fill();
+        }
+        // end the path, and finish drawing the circle
+        context.closePath();
         break;
     }
 
